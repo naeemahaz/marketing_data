@@ -1,0 +1,1348 @@
+
+MARKETING¶
+
+ANAYZING MARKETING CAMPAIGN PERFORMANCE
+ATTRIBUTING CREDIT FOR CONVERSIONS TO MARKETING CHNNELS
+A/B TESTING
+In [33]:
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+In [2]:
+mark = pd.read_csv('marketing.csv')
+
+DATA INFORMATION
+In [3]:
+mark.head()
+Out[3]:
+
+user_id
+date_served
+marketing_channel
+variant
+converted
+language_displayed
+language_preferred
+age_group
+date_subscribed
+date_canceled
+subscribing_channel
+is_retained
+0
+a100000029
+1/1/18
+House Ads
+personalization
+True
+English
+English
+0-18 years
+1/1/18
+NaN
+House Ads
+True
+1
+a100000030
+1/1/18
+House Ads
+personalization
+True
+English
+English
+19-24 years
+1/1/18
+NaN
+House Ads
+True
+2
+a100000031
+1/1/18
+House Ads
+personalization
+True
+English
+English
+24-30 years
+1/1/18
+NaN
+House Ads
+True
+3
+a100000032
+1/1/18
+House Ads
+personalization
+True
+English
+English
+30-36 years
+1/1/18
+NaN
+House Ads
+True
+4
+a100000033
+1/1/18
+House Ads
+personalization
+True
+English
+English
+36-45 years
+1/1/18
+NaN
+House Ads
+True
+In [5]:
+mark.describe()
+Out[5]:
+
+user_id
+date_served
+marketing_channel
+variant
+converted
+language_displayed
+language_preferred
+age_group
+date_subscribed
+date_canceled
+subscribing_channel
+is_retained
+count
+10037
+10021
+10022
+10037
+10022
+10037
+10037
+10037
+1856
+577
+1856
+1856
+unique
+7309
+31
+5
+2
+2
+4
+4
+7
+31
+115
+5
+2
+top
+a100000882
+1/15/18
+House Ads
+control
+False
+English
+English
+19-24 years
+1/16/18
+4/2/18
+Instagram
+True
+freq
+12
+789
+4733
+5091
+8946
+9793
+9275
+1682
+163
+15
+600
+1279
+In [6]:
+mark.info()
+
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 10037 entries, 0 to 10036
+Data columns (total 12 columns):
+user_id                10037 non-null object
+date_served            10021 non-null object
+marketing_channel      10022 non-null object
+variant                10037 non-null object
+converted              10022 non-null object
+language_displayed     10037 non-null object
+language_preferred     10037 non-null object
+age_group              10037 non-null object
+date_subscribed        1856 non-null object
+date_canceled          577 non-null object
+subscribing_channel    1856 non-null object
+is_retained            1856 non-null object
+dtypes: object(12)
+memory usage: 470.5+ KB
+
+-------------------------------------------------------------------
+
+DATA TYPE COLUMN
+In [8]:
+#data type of a column
+print(mark['converted'].dtype)
+
+object
+In [10]:
+#changing the data type of a column
+mark['converted'] = mark['converted']\
+.astype('bool')
+In [11]:
+mark
+Out[11]:
+
+user_id
+date_served
+marketing_channel
+variant
+converted
+language_displayed
+language_preferred
+age_group
+date_subscribed
+date_canceled
+subscribing_channel
+is_retained
+0
+a100000029
+1/1/18
+House Ads
+personalization
+True
+English
+English
+0-18 years
+1/1/18
+NaN
+House Ads
+True
+1
+a100000030
+1/1/18
+House Ads
+personalization
+True
+English
+English
+19-24 years
+1/1/18
+NaN
+House Ads
+True
+2
+a100000031
+1/1/18
+House Ads
+personalization
+True
+English
+English
+24-30 years
+1/1/18
+NaN
+House Ads
+True
+3
+a100000032
+1/1/18
+House Ads
+personalization
+True
+English
+English
+30-36 years
+1/1/18
+NaN
+House Ads
+True
+4
+a100000033
+1/1/18
+House Ads
+personalization
+True
+English
+English
+36-45 years
+1/1/18
+NaN
+House Ads
+True
+5
+a100000034
+1/1/18
+House Ads
+personalization
+True
+German
+German
+45-55 years
+1/1/18
+NaN
+House Ads
+True
+6
+a100000035
+1/1/18
+House Ads
+personalization
+True
+English
+English
+55+ years
+1/1/18
+NaN
+House Ads
+True
+7
+a100000036
+1/1/18
+House Ads
+personalization
+True
+English
+English
+0-18 years
+1/1/18
+NaN
+House Ads
+True
+8
+a100000037
+1/1/18
+House Ads
+personalization
+True
+English
+English
+19-24 years
+1/1/18
+NaN
+House Ads
+True
+9
+a100000038
+1/1/18
+House Ads
+personalization
+True
+English
+English
+24-30 years
+1/1/18
+NaN
+House Ads
+True
+10
+a100000039
+1/1/18
+House Ads
+personalization
+True
+English
+English
+0-18 years
+1/1/18
+NaN
+House Ads
+True
+11
+a100000040
+1/1/18
+House Ads
+personalization
+True
+English
+English
+19-24 years
+1/1/18
+1/18/18
+House Ads
+False
+12
+a100000041
+1/1/18
+House Ads
+personalization
+True
+Arabic
+Arabic
+24-30 years
+1/1/18
+2/22/18
+House Ads
+False
+13
+a100000042
+1/1/18
+House Ads
+personalization
+True
+English
+English
+0-18 years
+1/1/18
+3/9/18
+House Ads
+False
+14
+a100000043
+1/1/18
+House Ads
+personalization
+True
+English
+English
+19-24 years
+1/1/18
+2/18/18
+House Ads
+False
+15
+a100000044
+1/1/18
+House Ads
+personalization
+True
+Arabic
+Arabic
+24-30 years
+1/1/18
+3/3/18
+House Ads
+False
+16
+a100000045
+1/2/18
+House Ads
+personalization
+True
+English
+English
+0-18 years
+1/2/18
+2/4/18
+House Ads
+False
+17
+a100000046
+1/2/18
+House Ads
+personalization
+True
+English
+English
+19-24 years
+1/2/18
+1/9/18
+House Ads
+False
+18
+a100000047
+1/2/18
+House Ads
+personalization
+True
+English
+English
+24-30 years
+1/2/18
+2/4/18
+House Ads
+False
+19
+a100000048
+1/2/18
+House Ads
+personalization
+True
+German
+German
+0-18 years
+1/2/18
+1/21/18
+House Ads
+False
+20
+a100000049
+1/2/18
+House Ads
+personalization
+True
+German
+German
+19-24 years
+1/2/18
+NaN
+House Ads
+True
+21
+a100000050
+1/2/18
+House Ads
+personalization
+True
+English
+English
+24-30 years
+1/2/18
+NaN
+House Ads
+True
+22
+a100000050
+1/1/18
+House Ads
+personalization
+False
+English
+English
+24-30 years
+1/2/18
+NaN
+House Ads
+True
+23
+a100000051
+1/2/18
+House Ads
+personalization
+True
+English
+English
+30-36 years
+1/2/18
+NaN
+House Ads
+True
+24
+a100000051
+1/1/18
+Push
+personalization
+False
+English
+English
+30-36 years
+1/2/18
+NaN
+House Ads
+True
+25
+a100000052
+1/2/18
+House Ads
+personalization
+True
+English
+English
+36-45 years
+1/2/18
+NaN
+House Ads
+True
+26
+a100000052
+1/1/18
+House Ads
+personalization
+False
+English
+English
+36-45 years
+1/2/18
+NaN
+House Ads
+True
+27
+a100000053
+1/2/18
+House Ads
+personalization
+True
+English
+English
+45-55 years
+1/2/18
+NaN
+House Ads
+True
+28
+a100000053
+1/1/18
+House Ads
+personalization
+False
+English
+English
+45-55 years
+1/2/18
+NaN
+House Ads
+True
+29
+a100000054
+1/2/18
+House Ads
+personalization
+True
+English
+English
+55+ years
+1/2/18
+NaN
+House Ads
+True
+...
+...
+...
+...
+...
+...
+...
+...
+...
+...
+...
+...
+...
+10007
+a100007265
+1/16/18
+Email
+personalization
+True
+German
+German
+19-24 years
+1/16/18
+NaN
+Email
+True
+10008
+a100007266
+1/16/18
+Email
+personalization
+False
+German
+German
+24-30 years
+1/16/18
+NaN
+Email
+True
+10009
+a100007267
+1/16/18
+Email
+personalization
+True
+German
+German
+24-30 years
+1/16/18
+NaN
+Email
+True
+10010
+a100007268
+1/16/18
+Email
+personalization
+True
+German
+German
+0-18 years
+1/16/18
+NaN
+Email
+True
+10011
+a100007269
+1/16/18
+Email
+personalization
+True
+German
+German
+19-24 years
+1/16/18
+NaN
+Email
+True
+10012
+a100007270
+1/16/18
+Email
+personalization
+True
+German
+German
+24-30 years
+1/16/18
+NaN
+Email
+True
+10013
+a100007271
+1/16/18
+Email
+personalization
+True
+German
+German
+24-30 years
+1/16/18
+NaN
+Email
+True
+10014
+a100007272
+1/16/18
+Email
+personalization
+True
+German
+German
+0-18 years
+1/16/18
+NaN
+Email
+True
+10015
+a100007273
+1/16/18
+Email
+personalization
+True
+German
+German
+19-24 years
+1/16/18
+NaN
+Email
+True
+10016
+a100007274
+1/16/18
+Email
+personalization
+True
+German
+German
+24-30 years
+1/16/18
+NaN
+Email
+True
+10017
+a100007275
+1/16/18
+Email
+personalization
+True
+German
+German
+24-30 years
+1/16/18
+NaN
+Email
+True
+10018
+a100007276
+1/16/18
+Email
+personalization
+True
+German
+German
+0-18 years
+1/16/18
+NaN
+Email
+True
+10019
+a100007277
+1/16/18
+Email
+personalization
+True
+German
+German
+19-24 years
+1/16/18
+NaN
+Email
+True
+10020
+a100007278
+1/16/18
+Email
+control
+False
+German
+German
+0-18 years
+1/16/18
+NaN
+Email
+True
+10021
+a100007279
+1/16/18
+Email
+control
+True
+German
+German
+19-24 years
+1/16/18
+NaN
+Email
+True
+10022
+a100007280
+1/17/18
+Email
+control
+True
+German
+German
+24-30 years
+1/17/18
+NaN
+Email
+True
+10023
+a100007281
+1/17/18
+Email
+control
+True
+German
+German
+30-36 years
+1/17/18
+NaN
+Email
+True
+10024
+a100007282
+1/17/18
+Email
+control
+True
+German
+German
+36-45 years
+1/17/18
+2/25/18
+Email
+False
+10025
+a100007283
+1/17/18
+Email
+control
+True
+German
+German
+45-55 years
+1/17/18
+4/5/18
+Email
+False
+10026
+a100007284
+1/17/18
+Email
+control
+True
+German
+German
+55+ years
+1/17/18
+2/12/18
+Email
+False
+10027
+a100007285
+1/17/18
+Email
+control
+True
+German
+German
+0-18 years
+1/17/18
+4/4/18
+Email
+False
+10028
+a100007286
+1/17/18
+Email
+control
+True
+German
+German
+19-24 years
+1/17/18
+3/5/18
+Email
+False
+10029
+a100007287
+1/17/18
+Email
+control
+True
+German
+German
+24-30 years
+1/17/18
+2/14/18
+Email
+False
+10030
+a100007288
+1/17/18
+Email
+control
+True
+German
+German
+30-36 years
+1/17/18
+4/26/18
+Email
+False
+10031
+a100007289
+1/17/18
+Email
+control
+True
+German
+German
+36-45 years
+1/17/18
+1/27/18
+Email
+False
+10032
+a100007290
+1/17/18
+Email
+control
+True
+German
+German
+45-55 years
+1/17/18
+1/24/18
+Email
+False
+10033
+a100007291
+1/17/18
+Email
+control
+True
+German
+German
+55+ years
+1/17/18
+NaN
+Email
+True
+10034
+a100007292
+1/5/18
+Instagram
+control
+False
+German
+German
+55+ years
+1/17/18
+NaN
+Email
+True
+10035
+a100007293
+1/17/18
+Email
+control
+True
+German
+German
+0-18 years
+1/17/18
+NaN
+Email
+True
+10036
+a100007294
+1/6/18
+Facebook
+control
+False
+German
+German
+0-18 years
+1/17/18
+NaN
+Email
+True
+10037 rows × 12 columns
+In [17]:
+#building dictionary
+
+channel_dict = {"House Ads" : 1, "Instagram": 2, "Facebook": 3, "Email": 4, "Push": 5}
+mark['channel_code'] = mark['marketing_channel']\
+                        .map(channel_dict)
+print(mark['channel_code'].head(3))
+
+0    1.0
+1    1.0
+2    1.0
+Name: channel_code, dtype: float64
+In [19]:
+#date columns
+#read data colums using parse_dates
+
+mark['date_served'] = pd.to_datetime(
+    mark['date_served'])
+In [21]:
+mark['day_served'] = mark['date_served']\
+                    .dt.dayofweek
+In [23]:
+# Add the new column is_correct_lang
+# marketing['is_correct_lang'] = np.where(
+#     marketing['language_preferred'] == marketing['language_displayed'], 
+#    'Yes', 
+#    'No'
+# )
+
+exploratory analysis
+In [32]:
+#How many users see marketing assets?
+
+#aggregate unique users that see ads by date 
+
+daily_users = mark.groupby(['date_served'])\
+                            ['user_id'].nunique()
+
+print(daily_users)
+
+date_served
+2018-01-01    362
+2018-01-02    374
+2018-01-03    348
+2018-01-04    323
+2018-01-05    319
+2018-01-06    308
+2018-01-07    275
+2018-01-08    312
+2018-01-09    312
+2018-01-10    337
+2018-01-11    310
+2018-01-12    301
+2018-01-13    306
+2018-01-14    305
+2018-01-15    767
+2018-01-16    388
+2018-01-17    369
+2018-01-18    318
+2018-01-19    305
+2018-01-20    311
+2018-01-21    229
+2018-01-22    178
+2018-01-23    172
+2018-01-24    190
+2018-01-25    184
+2018-01-26    222
+2018-01-27    320
+2018-01-28    320
+2018-01-29    319
+2018-01-30    317
+2018-01-31    340
+Name: user_id, dtype: int64
+In [35]:
+#plot
+daily_users.plot()
+
+#annotate 
+plt.title('Daily number of users who see ads')
+plt.xlabel('Date')
+plt.ylabel('Number of users')
+plt.xticks(rotation = 45)
+plt.show()
+
+ 
+
+Introduction to common marketing metrics -- conversion rate
+In [41]:
+#campaign success measured by conversion rate. 
+
+
+
+
+
+#CONVERSION RATE = (NUMBER OF PEOPLE WHO CONVERT)/(TOTAL NUMBER OF PEOPLE WE MARKETED TO)
+    #CONVERSION RATE IS THE PERCENTAGE OF PEOPLE THAT WE MARKET TO WHO ULTIMATELY CONVERT TO OUR PRODUCT. 
+    
+#CALCULATING CONVERSION RATE USING PANDAS 
+
+subscribers = mark[mark['converted'] == True]\
+                   ['user_id'].nunique() 
+
+total = mark['user_id'].nunique()
+
+conv_rate = subscribers/total 
+
+print(round(conv_rate*100, 2), '%')
+
+#only the rows where converted equals True and then count the unique user_ids using nunique()
+#next we calculate the total number of people we marketed to. counting all the unique user id in the dataset
+#we can calculate conversion rate by dividing subscribers by total
+
+14.09 %
+In [44]:
+#retention rate -- retention rate is the percentage of people that remain subscribed after a certain period of time 
+
+#retention rate = (Number of people who remain subscribed)/(Total number of people who converted)
+#focus on one month
+#to determine the retention rate, we first calculat the total number of users who remain subscribers after one month 
+
+retained = mark[mark['is_retained'] == True]\
+            ['user_id'].nunique()
+
+#we can resue our "subscribes" calculation from the conversion rate calculation, as the number of total users who originally subscribed remains the same.
+
+subscribers = mark[mark['converted'] == True]\
+                   ['user_id'].nunique() 
+
+#finally, we divide the number of users who were retained by the number of users who subscribed to calulate the retention rate. 
+
+retention = retained/subscribers
+print(round(retention*100,2), '%')
+
+65.83 %
+
+Customer Segmentation
+In [47]:
+#Important to segment customers by who you're marketing to. 
+#Segmenting means breaking down metrics by specific characteristics.
+#age, gender, location, past interactions, marketing channels users interacted with 
+
+#segmenting 
+#subset to include only house ads 
+
+house_ads = mark\
+        [mark['subscribing_channel'] == 'House Ads']
+
+retained = house_ads[house_ads['is_retained'] == True]\
+            ['user_id'].nunique()
+
+subscribers = house_ads[house_ads['converted'] == True]\
+                   ['user_id'].nunique() 
+
+retention = retained/subscribers
+print(round(retention*100,2), '%')
+
+#compare rates across all channels to determine whether some channels perform better than others. 
+
+58.05 %
+In [48]:
+#Group by ssubscribing_channel and calculate retention 
+
+retained = mark[mark['is_retained'] == True]\
+        .groupby(['subscribing_channel'])\
+        ['user_id'].nunique()
+
+print(retained)
+
+subscribing_channel
+Email        141
+Facebook     152
+House Ads    173
+Instagram    158
+Push          54
+Name: user_id, dtype: int64
+In [49]:
+subscribers = mark[mark['converted'] == True]\
+        .groupby(['subscribing_channel'])\
+        ['user_id'].nunique()
+
+print(subscribers)
+
+subscribing_channel
+Email        161
+Facebook     221
+House Ads    298
+Instagram    232
+Push          77
+Name: user_id, dtype: int64
+In [50]:
+#segmenting results 
+
+#calculate the retention rate across the DataFrame 
+
+channel_retention_rate = (retained/subscribers)*100
+print(channel_retention_rate)
+
+#email has a high retention rate 
+
+subscribing_channel
+Email        87.577640
+Facebook     68.778281
+House Ads    58.053691
+Instagram    68.103448
+Push         70.129870
+Name: user_id, dtype: float64
+
+Plotting Campaign Results
+In [58]:
+retained = mark[mark['is_retained'] == True]\
+        .groupby(['language_preferred'])\
+        ['user_id'].nunique()
+
+print(retained)
+
+language_preferred
+Arabic      12
+English    606
+German      43
+Spanish     43
+Name: user_id, dtype: int64
+In [59]:
+subscribers = mark[mark['converted'] == True]\
+        .groupby(['language_preferred'])\
+        ['user_id'].nunique()
+
+print(subscribers)
+
+language_preferred
+Arabic      19
+English    916
+German      59
+Spanish     36
+Name: user_id, dtype: int64
+In [62]:
+#comparing language conversion rates 
+
+#language_preferred
+
+
+
+
+
+language_conversion_rate = (retained/subscribers)*100
+print(language_conversion_rate)
+
+#Create a bar chart using channel retention Dataframe 
+language_conversion_rate.plot(kind='bar')
+
+plt.title('Conversion rate by language\n')
+plt.xlabel('Language', size = 14)
+plt.ylabel('Conversion rate(%)', size = 14)
+
+plt.show()
+
+language_preferred
+Arabic      63.157895
+English     66.157205
+German      72.881356
+Spanish    119.444444
+Name: user_id, dtype: float64
+
+ 
+
+Calculating subscriber quality
+In [72]:
+#Group by language_displyed and count unique users 
+#form of cohort analysis
+
+total = mark.groupby(['date_subscribed'])['user_id']\
+                .nunique()
+#Group by language_displayed and sum conversions
+
+retained = mark[mark['is_retained'] == True]\
+            .groupby(['date_subscribed'])\
+            ['user_id'].nunique()
+
+#Calculate subscriber quality across dates
+
+daily_retention_rate = retained/total
+
+print(daily_retention_rate)
+
+date_subscribed
+1/1/18     0.777778
+1/10/18    0.682927
+1/11/18    0.615385
+1/12/18    0.391304
+1/13/18    0.500000
+1/14/18    0.615385
+1/15/18    0.714286
+1/16/18    0.701923
+1/17/18    0.616279
+1/18/18    0.733333
+1/19/18    0.684211
+1/2/18     0.702703
+1/20/18    0.809524
+1/21/18    0.761905
+1/22/18    0.772727
+1/23/18    0.714286
+1/24/18    0.652174
+1/25/18    0.565217
+1/26/18    0.800000
+1/27/18    0.571429
+1/28/18    0.666667
+1/29/18    0.750000
+1/3/18     0.729730
+1/30/18    0.714286
+1/31/18    0.666667
+1/4/18     0.500000
+1/5/18     0.575000
+1/6/18     0.756757
+1/7/18     0.526316
+1/8/18     0.638889
+1/9/18     0.675000
+Name: user_id, dtype: float64
+In [106]:
+#preparig data to be plotted over time 
+
+#reset idex to turn the Series into a data frame 
+
+#daily_retention_rate = pd.DataFrame(daily_retention_rate.reset_index())
+
+#date_subscribed
+#rename columns
+
+#daily_retention_rate.columns = [['date_subscribed','retention_rate']]
+
+#daily_retention_rate.plot()
+
+#daily_retention_rate.columns
+
+
+daily_retention_rate.columns
+daily_retention_rate.plot()
+#daily_retention_rate = pd.DataFrame(daily_retention_rate.reset_index())
+Out[106]:
+<matplotlib.axes._subplots.AxesSubplot at 0x5bf75b0>
+
+ 
+In [ ]:
+ 
